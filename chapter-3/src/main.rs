@@ -56,6 +56,34 @@ fn main() {
         one_or_two(),
         one_or_two()
     );
+
+    // LOOPS
+
+    // loop, while and for
+    let mut counter = 0;
+
+    let result = loop {
+        counter += 1;
+
+        if counter == 10 {
+            // break is an expression, so the value after it will be returned
+            break counter * 2;
+        }
+    };
+
+    println!("counter: {}; result: {}", counter, result);
+
+    // not much to say about while loops, pretty straightforward stuff
+
+    let array = [1, 2, 3, 4, 5];
+    for element in array.iter() {
+        println!("The value is {}", element);
+    }
+
+    for number in (1..4).rev() {
+        println!("Countdown: {}", number);
+    }
+
     println!("This is the end of the program!")
 }
 
