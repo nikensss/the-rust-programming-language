@@ -1,4 +1,7 @@
+use std::clone::Clone;
+use std::cmp::Eq;
 use std::collections::HashMap;
+use std::hash::Hash;
 use std::thread;
 use std::time::Duration;
 
@@ -9,35 +12,32 @@ fn main() {
     generate_workout(simulated_user_specified_value, simulated_random_number);
 }
 
-struct Cacher<T>
+struct Cacher<T, K, V>
 where
-    T: Fn(u32) -> u32,
+    K: Eq + Hash + Copy,
+    V: Clone,
+    T: Fn(K) -> V,
 {
     calculation: T,
-    values: HashMap<u32, u32>,
+    values: HashMap<K, V>,
 }
 
-impl<T> Cacher<T>
+impl<T, K, V> Cacher<T, K, V>
 where
-    T: Fn(u32) -> u32,
+    K: Eq + Hash + Copy,
+    V: Clone,
+    T: Fn(K) -> V,
 {
-    fn new(calculation: T) -> Cacher<T> {
+    fn new(calculation: T) -> Cacher<T, K, V> {
         Cacher {
             calculation,
-            values: HashMap::new(),
+            values: HashMap::<K, V>::new(),
         }
     }
 
-    fn value(&mut self, arg: u32) -> u32 {
-        let value = self.values.get(&arg);
-        match value {
-            Some(v) => *v,
-            None => {
-                let v = (self.calculation)(arg);
-                self.values.insert(arg, v);
-                v
-            }
-        }
+    fn value(&mut self, arg: K) -> V {
+        let v = self.values.entry(arg).or_insert((self.calculation)(arg));
+        v.clone()
     }
 }
 
