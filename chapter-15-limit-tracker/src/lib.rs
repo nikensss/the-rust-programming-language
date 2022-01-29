@@ -58,6 +58,7 @@ mod tests {
             self.sent_messages.borrow_mut().push(String::from(message));
         }
     }
+
     #[test]
     fn it_sends_an_over_75_percent_warning_message() {
         let mock_messenger = MockMessenger::new();
