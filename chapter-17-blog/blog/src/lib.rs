@@ -12,6 +12,7 @@ impl Post {
     }
 
     pub fn add_text(&mut self, text: &str) {
+        let text = self.state.as_ref().unwrap().add_text(text);
         self.content.push_str(text);
     }
 
@@ -30,10 +31,20 @@ impl Post {
             self.state = Some(s.approve())
         }
     }
+
+    pub fn reject(&mut self) {
+        if let Some(s) = self.state.take() {
+            self.state = Some(s.reject())
+        }
+    }
 }
 
 trait State {
     fn approve(self: Box<Self>) -> Box<dyn State>;
+
+    fn add_text<'a>(&self, _text: &'a str) -> &'a str {
+        ""
+    }
 
     fn content<'a>(&self, _post: &'a Post) -> &'a str {
         ""
@@ -49,6 +60,10 @@ struct Draft {}
 impl State for Draft {
     fn approve(self: Box<Self>) -> Box<dyn State> {
         self
+    }
+
+    fn add_text<'a>(&self, text: &'a str) -> &'a str {
+        &text
     }
 
     fn reject(self: Box<Self>) -> Box<dyn State> {
