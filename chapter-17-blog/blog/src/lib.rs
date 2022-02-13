@@ -1,3 +1,5 @@
+pub mod state_with_types;
+
 pub struct Post {
     state: Option<Box<dyn State>>,
     content: String,

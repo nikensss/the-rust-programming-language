@@ -1,3 +1,4 @@
+use blog::state_with_types::pseudo_main;
 use blog::Post;
 
 fn main() {
@@ -29,4 +30,6 @@ fn main() {
         "I ate a salad for lunch today. And got a blog rejected!",
         post.content()
     );
+
+    pseudo_main();
 }
