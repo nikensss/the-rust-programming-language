@@ -58,7 +58,7 @@ impl PendingReviewPost {
     }
 
     pub fn get_post(&self) -> Result<Post, String> {
-        if self.approvals == self.required_approvals {
+        if self.is_approved() {
             return Ok(Post {
                 content: self.content.clone(),
             });
