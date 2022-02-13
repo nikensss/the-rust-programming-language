@@ -57,13 +57,17 @@ impl PendingReviewPost {
         self.approvals
     }
 
-    pub fn get_post(self) -> Option<Post> {
+    pub fn get_post(&self) -> Result<Post, String> {
         if self.approvals == self.required_approvals {
-            return Some(Post {
-                content: self.content,
+            return Ok(Post {
+                content: self.content.clone(),
             });
         }
-        None
+
+        Err(format!(
+            "Missing {} approvals",
+            self.required_approvals - self.approvals,
+        ))
     }
 
     pub fn get_required_approvals(&self) -> u32 {
@@ -82,12 +86,17 @@ pub fn pseudo_main() {
     post.set_required_approvals(4);
     assert_eq!(4, post.get_required_approvals());
 
+    match post.get_post() {
+        Ok(_p) => panic!("Shouldn't have created a Post!"),
+        Err(msg) => assert_eq!("Missing 4 approvals", msg),
+    }
+
     while !post.is_approved() {
         post.approve();
     }
 
     assert_eq!(post.get_approvals(), post.get_required_approvals());
-    if let Some(p) = post.get_post() {
+    if let Ok(p) = post.get_post() {
         assert_eq!("I ate a salad for lunch today", p.content());
     } else {
         panic!("It should've been approved!");
