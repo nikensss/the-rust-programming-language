@@ -96,9 +96,8 @@ pub fn pseudo_main() {
     }
 
     assert_eq!(post.get_approvals(), post.get_required_approvals());
-    if let Ok(p) = post.get_post() {
-        assert_eq!("I ate a salad for lunch today", p.content());
-    } else {
-        panic!("It should've been approved!");
+    match post.get_post() {
+        Ok(p) => assert_eq!("I ate a salad for lunch today", p.content()),
+        Err(msg) => panic!("It should've been approved! Received '{}' instead", msg),
     }
 }
