@@ -26,19 +26,21 @@ impl DraftPost {
     pub fn request_review(self) -> PendingReviewPost {
         PendingReviewPost {
             content: self.content,
+            approvals: 0,
+            required_approvals: 2,
         }
     }
 }
 
 pub struct PendingReviewPost {
     content: String,
+    approvals: u32,
+    required_approvals: u32,
 }
 
 impl PendingReviewPost {
-    pub fn approve(self) -> Post {
-        Post {
-            content: self.content,
-        }
+    pub fn approve(&mut self) {
+        self.approvals += 1;
     }
 
     pub fn reject(self) -> DraftPost {
@@ -46,13 +48,32 @@ impl PendingReviewPost {
             content: self.content,
         }
     }
+
+    pub fn is_approved(&self) -> bool {
+        self.approvals == self.required_approvals
+    }
+
+    pub fn get_post(self) -> Option<Post> {
+        if self.approvals == self.required_approvals {
+            return Some(Post {
+                content: self.content,
+            });
+        }
+        None
+    }
 }
 
 pub fn pseudo_main() {
     let mut post = Post::new();
     post.add_text("I ate a salad for lunch today");
-    let post = post.request_review();
-    let post = post.approve();
+    let mut post = post.request_review();
+    while !post.is_approved() {
+        post.approve();
+    }
 
-    assert_eq!("I ate a salad for lunch today", post.content());
+    if let Some(p) = post.get_post() {
+        assert_eq!("I ate a salad for lunch today", p.content());
+    } else {
+        panic!("It should've been approved!");
+    }
 }
