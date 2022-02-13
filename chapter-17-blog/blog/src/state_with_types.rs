@@ -91,7 +91,7 @@ pub fn pseudo_main() {
         Err(msg) => assert_eq!("Missing 4 approvals", msg),
     }
 
-    while !post.is_approved() {
+    while let Err(_) = post.get_post() {
         post.approve();
     }
 
