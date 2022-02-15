@@ -4,6 +4,7 @@ use std::net::TcpStream;
 
 fn main() {
     let listener = TcpListener::bind("127.0.0.1:7878").unwrap();
+    println!("Listening for requests on http://localhost:7878...");
 
     for stream in listener.incoming() {
         let stream = stream.unwrap();
@@ -13,12 +14,16 @@ fn main() {
 }
 
 fn handle_connection(mut stream: TcpStream) {
+    println!("Received request!");
+
     let mut buffer = [0; 1024];
 
     stream.read(&mut buffer).unwrap();
 
     let response = "HTTP/1.1 200 OK\r\n\r\n";
 
+    print!("Sending response...");
     stream.write(response.as_bytes()).unwrap();
     stream.flush().unwrap();
+    println!(" Response sent!");
 }
