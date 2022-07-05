@@ -5,12 +5,17 @@ pub struct Post {
     content: String,
 }
 
-impl Post {
-    pub fn new() -> Post {
+impl Default for Post {
+    fn default() -> Post {
         Post {
             state: Some(Box::new(Draft {})),
             content: String::new(),
         }
+    }
+}
+impl Post {
+    pub fn new() -> Post {
+        Post::default()
     }
 
     pub fn add_text(&mut self, text: &str) {
@@ -19,7 +24,7 @@ impl Post {
     }
 
     pub fn content(&self) -> &str {
-        self.state.as_ref().unwrap().content(&self)
+        self.state.as_ref().unwrap().content(self)
     }
 
     pub fn request_review(&mut self) {
@@ -65,7 +70,7 @@ impl State for Draft {
     }
 
     fn add_text<'a>(&self, text: &'a str) -> &'a str {
-        &text
+        text
     }
 
     fn reject(self: Box<Self>) -> Box<dyn State> {
